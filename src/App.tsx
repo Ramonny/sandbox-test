@@ -10,7 +10,7 @@ export const ACTIONS = {
   EVALUATE: 'evaluate',
 }
 
-const DigitButton = ({ dispatch, digit }) => {
+const DigitButton = ({ dispatch, digit }: any) => {
   return (
     <button 
     onClick={() => dispatch({ type: ACTIONS.ADD_DIGIT, payload: { digit } })}
@@ -20,7 +20,7 @@ const DigitButton = ({ dispatch, digit }) => {
     )
 }
 
-const OperationButton = ({ dispatch, operation }) => {
+const OperationButton = ({ dispatch, operation }: any) => {
   return (
     <button 
     onClick={() => dispatch({ type: ACTIONS.CHOOSE_OPERATION, payload: { operation } })}
@@ -30,7 +30,7 @@ const OperationButton = ({ dispatch, operation }) => {
     )
 }
 
-function reducer(state, { type, payload }) {
+function reducer(state: any, { type, payload }: any) {
   switch(type) {
     case ACTIONS.ADD_DIGIT:
       if (state.overwrite) {
@@ -116,11 +116,11 @@ function reducer(state, { type, payload }) {
   }
 }
 
-function evaluate ({ currentOperand, previousOperand, operation}) {
+function evaluate ({ currentOperand, previousOperand, operation}: any) {
   const prev = parseFloat(previousOperand)
   const current = parseFloat(currentOperand)
   if (isNaN(prev) || isNaN(current)) return ""
-  let computation = ""
+  let computation
   switch (operation) {
     case "+":
       computation = prev + current
@@ -134,15 +134,16 @@ function evaluate ({ currentOperand, previousOperand, operation}) {
     case "÷":
       computation = prev / current
       break
+      
   }
 
-  return computation.toString()
+  return String(computation)
 }
 
 const INTEGER_FORMATTER = new Intl.NumberFormat("en-us", {
   maximumFractionDigits: 0,
 })
-function formatOperand(operand) {
+function formatOperand(operand: any) {
   if (operand == null) return
   const [integer, decimal] = operand.split('.')
   if (decimal == null) return INTEGER_FORMATTER.format(integer)
