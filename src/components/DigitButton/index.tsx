@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { ACTIONS } from "../Calculator/calculatorMetadata";
 
 const DigitButton = ({ dispatch, digit }: any) => {
