@@ -5,5 +5,5 @@ For there are many topics to be scrutinized in both macro and micro approaches, 
 
 =================================================
 
-This repository is a sandbox website as part of the programming study experiment "The Tower Of Code" -- by [@djowvani_]([https://pages.github.com/](https://github.com/djowvani))
+This repository is a sandbox website as part of the programming study experiment "The Tower Of Code" -- by ([@djowvani_](https://github.com/djowvani))
 ![image](https://github.com/Ramonny/sandbox-test/assets/31111949/f3b2cf24-55a8-46b2-bad0-d248686d4b0a)
