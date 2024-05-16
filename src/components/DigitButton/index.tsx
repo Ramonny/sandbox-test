@@ -1,7 +1,6 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import { ACTIONS } from "../Calculator/calculatorMetadata";
+import { ACTIONS, IDigitButton } from "../Calculator/calculatorMetadata";
 
-const DigitButton = ({ dispatch, digit }: any) => {
+const DigitButton: React.FC<IDigitButton> = ({ dispatch, digit }) => {
   return (
     <button
       onClick={() => dispatch({ type: ACTIONS.ADD_DIGIT, payload: { digit } })}

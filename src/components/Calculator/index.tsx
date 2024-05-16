@@ -1,8 +1,14 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useReducer, useState } from "react";
+
 import DigitButton from "../DigitButton";
 import OperationButton from "../OperationButton";
-import { ACTIONS } from "./calculatorMetadata";
+
+import {
+  ACTIONS,
+  TCalculatorState,
+  TCalculatorAction,
+  TCalculatorNumber,
+} from "./calculatorMetadata";
 
 const Calculator = () => {
   const [resultHistory, setResultHistory] = useState<number[]>([]);
@@ -10,31 +16,88 @@ const Calculator = () => {
     maximumFractionDigits: 0,
   });
 
-  const reducer = (state: any, { type, payload }: any) => {
+  const initialState = {
+    previousOperand: null,
+    operation: null,
+    currentOperand: null,
+    overwrite: false,
+  } as TCalculatorState;
+
+  const evaluate = (state: TCalculatorState) => {
+    const { currentOperand, previousOperand, operation } = state;
+
+    if (previousOperand && currentOperand) {
+      let computation;
+      const prev = parseFloat(previousOperand);
+      const current = parseFloat(currentOperand);
+
+      switch (operation) {
+        default:
+          break;
+
+        case "+":
+          computation = prev + current;
+          setResultHistory([...resultHistory, computation]);
+          break;
+
+        case "-":
+          computation = prev - current;
+          setResultHistory([...resultHistory, computation]);
+          break;
+
+        case "*":
+          computation = prev * current;
+          setResultHistory([...resultHistory, computation]);
+          break;
+
+        case "÷":
+          computation = prev / current;
+          setResultHistory([...resultHistory, computation]);
+          break;
+      }
+      return String(computation);
+    }
+
+    return "";
+  };
+
+  const reducer = (
+    state: TCalculatorState,
+    action: TCalculatorAction
+  ): TCalculatorState => {
+    const { type, payload } = action;
     switch (type) {
+      default:
+        return {} as TCalculatorState;
+
       case ACTIONS.ADD_DIGIT:
         if (state.overwrite) {
           return {
             ...state,
-            currentOperand: payload.digit,
+            currentOperand: payload?.digit,
             overwrite: false,
           };
         }
-        if (payload.digit === "0" && state.currentOperand === "0") {
+
+        if (payload?.digit === "0" && state.currentOperand === "0") {
           return state;
         }
 
-        if (payload.digit === "." && state.currentOperand === undefined) {
+        if (payload?.digit === "." && state.currentOperand === undefined) {
           return state;
         }
 
-        if (payload.digit === "." && state.currentOperand.includes(".")) {
+        if (
+          payload?.digit === "." &&
+          state.currentOperand &&
+          state.currentOperand.includes(".")
+        ) {
           return state;
         }
 
         return {
           ...state,
-          currentOperand: `${state.currentOperand || ""}${payload.digit}`,
+          currentOperand: `${state.currentOperand || ""}${payload?.digit}`,
         };
 
       case ACTIONS.CHOOSE_OPERATION:
@@ -45,14 +108,14 @@ const Calculator = () => {
         if (state.currentOperand == null) {
           return {
             ...state,
-            operation: payload.operation,
+            operation: payload?.operation,
           };
         }
 
         if (state.previousOperand == null) {
           return {
             ...state,
-            operation: payload.operation,
+            operation: payload?.operation,
             previousOperand: state.currentOperand,
             currentOperand: null,
           };
@@ -61,11 +124,13 @@ const Calculator = () => {
         return {
           ...state,
           previousOperand: evaluate(state),
-          operation: payload.operation,
+          operation: payload?.operation,
           currentOperand: null,
         };
+
       case ACTIONS.CLEAR:
-        return {};
+        return initialState;
+
       case ACTIONS.DELETE_DIGIT:
         if (state.overwrite) {
           return {
@@ -74,8 +139,10 @@ const Calculator = () => {
             currentOperand: null,
           };
         }
+
         if (state.currentOperand == null) return state;
-        if (state.currentOperand.lenght === 1) {
+
+        if (state.currentOperand.length === 1) {
           return { ...state, currentOperand: null };
         }
 
@@ -83,6 +150,7 @@ const Calculator = () => {
           ...state,
           currentOperand: state.currentOperand.slice(0, -1),
         };
+
       case ACTIONS.EVALUATE:
         if (
           state.operation == null ||
@@ -102,47 +170,16 @@ const Calculator = () => {
     }
   };
 
-  const evaluate = ({ currentOperand, previousOperand, operation }: any) => {
-    const prev = parseFloat(previousOperand);
-    const current = parseFloat(currentOperand);
-    if (isNaN(prev) || isNaN(current)) return "";
-    let computation;
-    switch (operation) {
-      case "+":
-        computation = prev + current;
-        setResultHistory([...resultHistory, computation]);
+  const [calculatorState, dispatch] = useReducer(reducer, initialState);
+  const { currentOperand, previousOperand, operation } = calculatorState;
 
-        break;
-      case "-":
-        computation = prev - current;
-        setResultHistory([...resultHistory, computation]);
-
-        break;
-      case "*":
-        computation = prev * current;
-        setResultHistory([...resultHistory, computation]);
-
-        break;
-      case "÷":
-        computation = prev / current;
-        setResultHistory([...resultHistory, computation]);
-
-        break;
-    }
-    console.log(evaluate);
-    return String(computation);
-  };
-
-  const formatOperand = (operand: any) => {
+  const formatOperand = (operand: TCalculatorNumber) => {
     if (operand == null) return;
     const [integer, decimal] = operand.split(".");
-    if (decimal == null) return INTEGER_FORMATTER.format(integer);
-    return `${INTEGER_FORMATTER.format(integer)}.${decimal}`;
+    if (decimal == null) return INTEGER_FORMATTER.format(Number(integer));
+    return `${INTEGER_FORMATTER.format(Number(integer))}.${decimal}`;
   };
-  const [{ currentOperand, previousOperand, operation }, dispatch] = useReducer(
-    reducer,
-    {}
-  );
+
   return (
     <div className="calculator-container">
       <div className="calculator-grid">
