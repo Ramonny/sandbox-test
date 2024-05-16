@@ -1,6 +1,6 @@
 type IPayloadData = {
-  digit: string;
-  operation: string;
+  digit?: string;
+  operation?: string;
 };
 
 export type TCalculatorNumber = string | null | undefined;
@@ -16,6 +16,16 @@ export type TCalculatorAction = {
   type: string;
   payload?: IPayloadData;
 };
+
+export interface IDigitButton {
+  dispatch: React.Dispatch<TCalculatorAction>;
+  digit: string;
+}
+
+export interface IOperationButton {
+  dispatch: React.Dispatch<TCalculatorAction>;
+  operation: string;
+}
 
 export const ACTIONS = {
   ADD_DIGIT: "add-digit",

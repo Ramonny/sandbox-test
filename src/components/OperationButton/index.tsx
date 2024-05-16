@@ -1,6 +1,9 @@
-import { ACTIONS } from "../Calculator/calculatorMetadata";
+import { ACTIONS, IOperationButton } from "../Calculator/calculatorMetadata";
 
-const OperationButton = ({ dispatch, operation }: any) => {
+const OperationButton: React.FC<IOperationButton> = ({
+  dispatch,
+  operation,
+}) => {
   return (
     <button
       onClick={() =>
